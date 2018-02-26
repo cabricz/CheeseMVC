@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using CheeseMVC.Models;
 
 namespace CheeseMVC.Controllers
 {
     public class CheeseController : Controller
     {
-        static private Dictionary<string,string> Cheeses = new Dictionary<string, string>();
+        //static private Dictionary<string,string> Cheeses = new Dictionary<string, string>();
+        private static List<Cheese> cheeses = new List<Cheese>();
 
         // GET: /<controller>/
         public IActionResult Index()
         {
-            ViewBag.cheeses = Cheeses;
+            ViewBag.cheeses = cheeses;
 
             return View();
         }
@@ -27,23 +29,29 @@ namespace CheeseMVC.Controllers
         [Route("/Cheese/Add")]
         public IActionResult NewCheese(string name, string description)
         {
-            Cheeses.Add(name, description);
+            cheeses.Add(new Cheese(name, description));
 
             return Redirect("/Cheese");
         }
 
         public IActionResult Remove()
         {
-            ViewBag.cheeses = Cheeses;
+            ViewBag.cheeses = cheeses;
 
             return View();
         }
 
         [HttpPost]
         [Route("/Cheese/Remove")]
-        public IActionResult RemoveCheese(string cheese)
+        public IActionResult RemoveCheese(string cheeseName)
         {
-            Cheeses.Remove(cheese);
+            foreach (Cheese cheese in cheeses.ToArray())
+            {
+                if (cheese.Name == cheeseName)
+                {
+                    cheeses.Remove(cheese);
+                }
+            }
 
             return Redirect("/Cheese");
         }
