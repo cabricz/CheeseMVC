@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CheeseMVC.Models;
 
+// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace CheeseMVC.Controllers
 {
     public class CheeseController : Controller
     {
-        //static private Dictionary<string,string> Cheeses = new Dictionary<string, string>();
-        private static List<Cheese> cheeses = new List<Cheese>();
 
         // GET: /<controller>/
         public IActionResult Index()
         {
-            ViewBag.cheeses = cheeses;
+            ViewBag.cheeses = CheeseData.GetAll();
 
             return View();
         }
@@ -27,30 +27,28 @@ namespace CheeseMVC.Controllers
 
         [HttpPost]
         [Route("/Cheese/Add")]
-        public IActionResult NewCheese(string name, string description)
+        public IActionResult NewCheese(Cheese newCheese)
         {
-            cheeses.Add(new Cheese(name, description));
+            // Add the new cheese to my existing cheeses
+
+            CheeseData.Add(newCheese);
 
             return Redirect("/Cheese");
         }
 
         public IActionResult Remove()
         {
-            ViewBag.cheeses = cheeses;
-
+            ViewBag.title = "Remove Cheeses";
+            ViewBag.cheeses = CheeseData.GetAll();
             return View();
         }
 
         [HttpPost]
-        [Route("/Cheese/Remove")]
-        public IActionResult RemoveCheese(string cheeseName)
+        public IActionResult Remove(int[] cheeseIds)
         {
-            foreach (Cheese cheese in cheeses.ToArray())
+            foreach (int cheeseId in cheeseIds)
             {
-                if (cheese.Name == cheeseName)
-                {
-                    cheeses.Remove(cheese);
-                }
+                CheeseData.Remove(cheeseId);
             }
 
             return Redirect("/Cheese");
